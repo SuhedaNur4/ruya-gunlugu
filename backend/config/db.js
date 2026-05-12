@@ -1,0 +1,1 @@
+// Veritabanı bağlantı ayarları (SQLite)
