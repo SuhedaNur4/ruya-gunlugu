@@ -9,12 +9,11 @@ app.use(express.json());
 // Middleware: Frontend'in farklı bir porttan (örn: 5500) istek atmasına izin vermek için
 app.use(cors());
 
-// Dummy Route - Sistem çalışıyor mu testi
-app.get('/api/dreams', (req, res) => {
-    res.status(200).json([
-        { id: 1, title: "Test Rüya", description: "Backend çalışıyor!" }
-    ]);
-});
+// Rotaları içe aktar
+const dreamRoutes = require('./routes/dreamRoutes');
+
+// API yollarını bağla
+app.use('/api/dreams', dreamRoutes);
 
 // app'i dışa aktarıyoruz ki server.js kullanabilsin
 module.exports = app;
