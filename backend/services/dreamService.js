@@ -1,32 +1,71 @@
-const db = require('../config/db');
+const { v4: uuidv4 } = require('uuid');
+const dreamModel = require('../models/dreamModel');
 
-const getAllDreams = () => {
-    return db.prepare('SELECT * FROM dreams ORDER BY id DESC').all();
-};
+const ALLOWED_CATEGORIES = ['Lucid', 'Kabus', 'Huzurlu', 'Garip', 'Nostaljik', 'Macera', 'Kozmik', 'Diğer'];
 
-const getDreamById = (id) => {
-    return db.prepare('SELECT * FROM dreams WHERE id = ?').get(id);
-};
+function normalizeCategory(category) {
+    return ALLOWED_CATEGORIES.includes(category) ? category : 'Diğer';
+}
 
-const createDream = (title, content) => {
-    const info = db.prepare('INSERT INTO dreams (title, content) VALUES (?, ?)').run(title, content);
-    return info.lastInsertRowid; // Yeni eklenen rüyanın id dönecek
-};
+function validateDreamInput({ title, content }) {
+    if (!title || !title.trim()) {
+        const error = new Error('Başlık zorunludur.');
+        error.statusCode = 400;
+        throw error;
+    }
+    if (title.length > 120) {
+        const error = new Error('Başlık en fazla 120 karakter olabilir.');
+        error.statusCode = 400;
+        throw error;
+    }
+    if (content && content.length > 5000) {
+        const error = new Error('İçerik en fazla 5000 karakter olabilir.');
+        error.statusCode = 400;
+        throw error;
+    }
+}
 
-const updateDream = (id, title, content) => {
-    const info = db.prepare('UPDATE dreams SET title = ?, content = ? WHERE id = ?').run(title, content, id);
-    return info.changes > 0; // Eğer güncellendiyse true, bulunamadıysa false döner
-};
+function getAllDreams(userId) {
+    return dreamModel.findAllByUser(userId);
+}
 
-const deleteDream = (id) => {
-    const info = db.prepare('DELETE FROM dreams WHERE id = ?').run(id);
-    return info.changes > 0; // Eğer silindiyse true, bulunamadıysa false döner
-};
+function getDreamByPublicId(publicId, userId) {
+    return dreamModel.findByPublicIdAndUser(publicId, userId);
+}
+
+function createDream(userId, title, content, category) {
+    validateDreamInput({ title, content });
+    const publicId = uuidv4();
+    return dreamModel.create({
+        publicId,
+        userId,
+        title: title.trim(),
+        content: (content || '').trim(),
+        category: normalizeCategory(category)
+    });
+}
+
+function updateDream(publicId, userId, title, content, category) {
+    validateDreamInput({ title, content });
+    const result = dreamModel.updateByPublicIdAndUser(publicId, userId, {
+        title: title.trim(),
+        content: (content || '').trim(),
+        category: normalizeCategory(category)
+    });
+    return result.changes > 0;
+}
+
+function deleteDream(publicId, userId) {
+    const result = dreamModel.softDeleteByPublicIdAndUser(publicId, userId);
+    return result.changes > 0;
+}
 
 module.exports = {
     getAllDreams,
-    getDreamById,
+    getDreamByPublicId,
     createDream,
     updateDream,
-    deleteDream
+    deleteDream,
+    validateDreamInput,
+    normalizeCategory
 };
