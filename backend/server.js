@@ -4,6 +4,9 @@ const app = require('./app');
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-    console.log(` Sunucu ${PORT} portunda çalışıyor...`);
-    console.log(` Test için: http://localhost:${PORT}/api/dreams`);
+    console.log(`🌌 Sinematik Rüya Arşivi API'si hazır.`);
+    console.log(`✨ Sunucu http://localhost:${PORT} portunda çalışıyor.`);
+    if (!process.env.JWT_SECRET) {
+        console.warn("⚠️ UYARI: JWT_SECRET tanımlı değil! Lütfen .env dosyasında belirtin.");
+    }
 });
