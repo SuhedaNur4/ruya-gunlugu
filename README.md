@@ -1,106 +1,189 @@
-# 💤 Rüya Günlüğü Uygulaması
+# Rüya Günlüğü
 
-Bu proje, Sistem Analizi ve Tasarımı dersi kapsamında geliştirilmiş web tabanlı bir **Rüya Günlüğü** uygulamasıdır. 
-Kullanıcıların gördükleri rüyaları sisteme ekleyebileceği, görüntüleyebileceği, güncelleyebileceği ve silebileceği tam bir CRUD sistemidir.
+Vanilla JavaScript SPA + Node.js/Express + SQLite kullanan, kullanıcı bazlı rüya CRUD uygulaması.  
 
-Amacı, temel yazılım mühendisliği prensiplerini uygulayarak modüler (katmanlı mimari), test edilebilir ve RESTful bir web uygulaması geliştirmektir.
-
----
-
-## 🚀 Kullanılan Teknolojiler
-
-- **Backend:** Node.js, Express.js
-- **Veritabanı:** SQLite
-- **Frontend:** Vanilla JavaScript (SPA Mimari), HTML5, CSS3
-- **Test:** Jest
-- **API Dokümantasyon:** Swagger UI
+Sistem Analizi ve Tasarımı dersi kapsamında geliştirilmiştir.
 
 ---
 
-## 📁 Proje Yapısı (Katmanlı Mimari)
+## Kullanılan Teknolojiler
+
+| Katman | Teknoloji |
+|---|---|
+| Frontend | HTML, CSS, Vanilla JavaScript |
+| SPA Yapısı | JavaScript ile dinamik view yönetimi |
+| Backend | Node.js, Express.js |
+| Veritabanı | SQLite, better-sqlite3 |
+| Kimlik Doğrulama | bcryptjs, JSON Web Token |
+| Güvenlik | JWT Bearer, Helmet, CORS, Rate Limit |
+| API Dokümantasyonu | Swagger UI, swagger-jsdoc |
+| Test | Jest |
+| ID Sistemi | UUID public_id |
+
+---
+
+## Proje Yapısı
 
 ```text
 ruya-gunlugu/
 ├── backend/
-│   ├── config/           # Veritabanı yapılandırmaları
-│   ├── controllers/      # HTTP isteklerini karşılayan katman
-│   ├── services/         # İş mantığı (business logic)
-│   ├── models/           # Veritabanı işlemleri
-│   ├── routes/           # API endpoint tanımları
-│   ├── tests/            # Unit testler (Jest)
-│   ├── app.js            # Express uygulaması
-│   ├── server.js         # Sunucu başlatma dosyası
-│   ├── swagger.js        # API dokümantasyonu
+│   ├── config/
+│   │   └── db.js                  # SQLite bağlantısı ve tablo oluşturma
+│   │
+│   ├── controllers/
+│   │   ├── authController.js      # Auth request/response yönetimi
+│   │   └── dreamController.js     # Dream request/response yönetimi
+│   │
+│   ├── middleware/
+│   │   └── authMiddleware.js      # JWT doğrulama ve kullanıcı kontrolü
+│   │
+│   ├── models/
+│   │   └── dreamModel.js          # Veritabanı sorguları / Data Access Layer
+│   │
+│   ├── routes/
+│   │   ├── authRoutes.js          # Auth endpointleri
+│   │   └── dreamRoutes.js         # Dream endpointleri + Swagger JSDoc
+│   │
+│   ├── services/
+│   │   ├── authService.js         # Auth iş mantığı
+│   │   └── dreamService.js        # Dream iş mantığı ve validasyon
+│   │
+│   ├── tests/
+│   │   └── dreamService.test.js   # Jest unit testleri
+│   │
+│   ├── app.js                     # Express app yapılandırması
+│   ├── server.js                  # Sunucu başlatma
+│   ├── swagger.js                 # Swagger ayarları
+│   ├── .env.example               # Ortam değişkenleri örneği
 │   └── package.json
 │
 ├── frontend/
-│   ├── index.html        # SPA ana sayfa
-│   ├── style.css
-│   └── app.js            # API çağrıları ve DOM işlemleri
+│   ├── index.html                 # Tek sayfa SPA yapısı
+│   ├── style.css                  # Arayüz stilleri
+│   └── app.js                     # SPA akışı, fetch istekleri, DOM işlemleri
 │
+├── .gitignore
 └── README.md
-```
 
 ---
 
-## ⚙️ Kurulum ve Çalıştırma
+## Kurulum
 
-Projeyi bilgisayarınızda (yeniden) üretmek ve çalıştırmak için aşağıdaki adımları izleyin.
-
-### 1. Projeyi Klonlayın
 ```bash
-git clone <github-repo-linki>
+git clone <repo-url>
 cd ruya-gunlugu/backend
-```
-
-### 2. Bağımlılıkları Yükleyin
-```bash
 npm install
 ```
 
-### 3. Uygulamayı Başlatın
+---
+
+## Ortam Değişkenleri (.env)
+
+`backend/` klasörüne `.env` dosyası oluşturun:
+
 ```bash
+cp .env.example .env
+```
+
+`.env` içeriği:
+
+```
+PORT=3000
+JWT_SECRET=replace_this_with_a_long_random_secret_key
+CLIENT_ORIGIN=http://127.0.0.1:5500
+NODE_ENV=development
+```
+
+> ⚠️  Test için rastgele değerler kullanın
+
+---
+
+## Backend Çalıştırma
+
+```bash
+cd backend
+
+# Geliştirme (otomatik yeniden başlatma):
+npm run dev
+
+# Üretim:
 npm start
 ```
-*(Sunucu varsayılan olarak `http://localhost:3000` portunda çalışacaktır. Veritabanı dosyası ilk çalışmada SQLite tarafından otomatik olarak oluşturulur.)*
 
-### 4. Frontend'i Açın
-Uygulama arayüzüne erişmek için `frontend/index.html` dosyasını doğrudan bir web tarayıcısında açmanız yeterlidir. (Veya VS Code Live Server eklentisini kullanabilirsiniz.)
+Sunucu `http://localhost:3000` adresinde başlar.
 
 ---
 
-## 📌 API Endpoints (Rüyalar)
+## Frontend Çalıştırma
 
-Frontend, aşağıdaki RESTful API uç noktalarıyla JSON formatında haberleşir:
+`frontend/index.html` dosyasını VS Code **Live Server** ile açın.  
+Varsayılan origin: `http://127.0.0.1:5500`
 
-- `GET /api/dreams` → Tüm rüyaları listele
-- `GET /api/dreams/:id` → Belirli bir rüyanın detayını getir
-- `POST /api/dreams` → Yeni rüya ekle
-- `PUT /api/dreams/:id` → Mevcut rüyayı güncelle
-- `DELETE /api/dreams/:id` → Rüyayı sil
+Herhangi bir derleme adımı (Webpack, Vite vb.) gerekmez.
 
 ---
 
-## 🧪 Testleri Çalıştırma
+## Swagger API Dokümantasyonu
 
-Projede "iş mantığı" (Business Logic) katmanı olan `services` test edilmiştir.
+Backend çalışırken:
+
+```
+http://localhost:3000/api-docs
+```
+
+Tüm endpoint'ler Swagger UI üzerinden test edilebilir. "Authorize" butonuna JWT token'ı girin.
+
+---
+
+## Unit Testler
+
 ```bash
+cd backend
 npm test
 ```
 
 ---
 
-## 📚 API Dokümantasyonu (Swagger)
+## API Endpoints
 
-API endpoint'lerini keşfetmek ve test etmek için sunucu çalışırken aşağıdaki adrese gidin:
+### Auth
+
+| Metot | Endpoint | Açıklama | Auth |
+|---|---|---|---|
+| POST | `/api/auth/register` | Yeni kullanıcı kaydı | Hayır |
+| POST | `/api/auth/login` | Giriş, JWT token döner | Hayır |
+| GET | `/api/auth/me` | Giriş yapan kullanıcı bilgileri | JWT |
+
+### Dreams
+
+| Metot | Endpoint | Açıklama | Auth |
+|---|---|---|---|
+| GET | `/api/dreams` | Kullanıcının tüm rüyalarını listele | JWT |
+| POST | `/api/dreams` | Yeni rüya ekle | JWT |
+| GET | `/api/dreams/:publicId` | Belirli rüyanın detayı | JWT |
+| PUT | `/api/dreams/:publicId` | Rüyayı güncelle | JWT |
+| DELETE | `/api/dreams/:publicId` | Rüyayı arşivden kaldır (soft delete) | JWT |
+
+**Request örneği (POST /api/dreams):**
+```json
+{
+  "title": "Uçan şehir",
+  "content": "Bulutların üzerinde yürüdüm...",
+  "category": "Lucid"
+}
 ```
-http://localhost:3000/api-docs
-```
+
+Geçerli kategoriler: `Lucid`, `Kabus`, `Huzurlu`, `Garip`, `Nostaljik`, `Macera`, `Kozmik`, `Diğer`
 
 ---
 
-## 🏗️ Mimari ve Tasarım Kararları
+## Güvenlik
 
-- **Katmanlı Mimari:** Uygulama modüler bir yapıdadır. İş mantığı (business logic) doğrudan route veya controller içerisinde değil, izole edilmiş `services` katmanında yönetilir. Bu sayede kodun test edilebilirliği ve bakımı kolaylaştırılmıştır.
-- **Single Page Application (SPA):** Kullanıcı arayüzü Vanilla JavaScript ile geliştirilmiştir. Asenkron `fetch` istekleri kullanılarak sayfa yenilemesi olmadan dinamik bir deneyim sunulur.
-- **Arama ve Basit Filtreleme:** Temel CRUD işlemlerine ek olarak, kullanıcıların rüyalarını metin bazlı arayabileceği ve belirli kategorilere (örn. Lucid rüyalar) göre filtreleyebileceği bir arama sistemi tasarlanmıştır.
+- **Şifre Hashleme:** Kullanıcı şifreleri `bcryptjs` ile hashlenerek saklanır. Düz metin şifre veritabanında tutulmaz.
+- **JWT:** Oturum tokeni `Authorization: Bearer <token>` başlığıyla her istekte gönderilir. `jwt.verify` ile doğrulanır; süresi dolmuş veya bozuk token 401 döner.
+- **Kullanıcı İzolasyonu:** Tüm rüya sorguları `WHERE user_id = ?` filtresi içerir. A kullanıcısı, B kullanıcısının rüyasını göremez, güncelleyemez veya silemez.
+- **public_id (UUID):** API'de tahmin edilebilir sıralı numeric id (`/api/dreams/1`) kullanılmaz. Her rüyanın UUID formatında `public_id`'si vardır.
+- **Soft Delete:** `DELETE` endpoint'i rüyayı veritabanından silmez; `is_deleted = 1` yaparak gizler. `GET` sorguları yalnızca `is_deleted = 0` kayıtları döner.
+- **DB Varlık Kontrolü:** Token geçerli imzalı olsa bile, veritabanında artık karşılığı olmayan kullanıcılar için 401 döner (500 değil).
+
+
