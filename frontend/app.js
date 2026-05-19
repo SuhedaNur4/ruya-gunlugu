@@ -289,9 +289,22 @@ function logout() {
 async function handleSaveDream(event) {
     event.preventDefault();
     const form = event.currentTarget;
-    const title = document.getElementById('title').value;
-    const content = document.getElementById('content').value;
+    const title = document.getElementById('title').value.trim();
+    const content = document.getElementById('content').value.trim();
     const category = document.getElementById('category').value;
+
+    if (!title) {
+        showToast("Başlık zorunludur.", "error");
+        return;
+    }
+    if (title.length > 120) {
+        showToast("Başlık en fazla 120 karakter olabilir.", "error");
+        return;
+    }
+    if (content.length > 5000) {
+        showToast("İçerik en fazla 5000 karakter olabilir.", "error");
+        return;
+    }
 
     try {
         await apiFetch('/dreams', {
@@ -544,6 +557,20 @@ function showEditModal(dream) {
             const title = document.getElementById('edit-title').value.trim();
             const content = document.getElementById('edit-content').value.trim();
             const category = document.getElementById('edit-category').value;
+
+            if (!title) {
+                showToast("Başlık zorunludur.", "error");
+                return;
+            }
+            if (title.length > 120) {
+                showToast("Başlık en fazla 120 karakter olabilir.", "error");
+                return;
+            }
+            if (content.length > 5000) {
+                showToast("İçerik en fazla 5000 karakter olabilir.", "error");
+                return;
+            }
+
             await handleUpdateDream(publicId, { title, content, category });
         }, { once: true });
     }
