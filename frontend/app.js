@@ -197,12 +197,36 @@ function restoreTheme() {
     }
 }
 
+// --- YARDIMCI FONKSİYONLAR ---
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
 // --- AUTH İŞLEMLERİ ---
 async function handleLogin(event) {
     event.preventDefault();
     const form = event.currentTarget;
     const email = form.email.value.trim();
     const password = form.password.value;
+
+    if (!email || !password) {
+        showToast("E-posta ve şifre zorunludur.", "error");
+        return;
+    }
+
+    if (!isValidEmail(email)) {
+        showToast("Geçerli bir e-posta adresi giriniz.", "error");
+        return;
+    }
 
     try {
         const data = await apiFetch("/auth/login", {
@@ -237,6 +261,21 @@ async function handleRegister(event) {
     const name = form.name.value.trim();
     const email = form.email.value.trim();
     const password = form.password.value;
+
+    if (!name) {
+        showToast("İsim zorunludur.", "error");
+        return;
+    }
+
+    if (!email || !password) {
+        showToast("E-posta ve şifre zorunludur.", "error");
+        return;
+    }
+
+    if (!isValidEmail(email)) {
+        showToast("Geçerli bir e-posta adresi giriniz.", "error");
+        return;
+    }
 
     if (password.length < 6) {
         showToast("Şifre en az 6 karakter olmalıdır.", "error");
@@ -405,23 +444,28 @@ function renderDreams() {
         card.className = 'dream-card reveal-element';
         card.style.animationDelay = `${index * 0.08}s`;
 
-        const excerpt = (dream.content && dream.content.length > 130)
+        const rawExcerpt = (dream.content && dream.content.length > 130)
             ? dream.content.substring(0, 130) + '...'
             : (dream.content || "Geriye sadece ince bir his kalmış...");
 
         const cat = dream.category || 'Diğer';
         const icon = ICONS[cat] || ICONS['Diğer'];
 
+        const safeTitle = escapeHTML(dream.title);
+        const safeExcerpt = escapeHTML(rawExcerpt);
+        const safeCategory = escapeHTML(cat);
+        const safeDate = escapeHTML(dream.date || dream.created_at.split(' ')[0]);
+
         card.innerHTML = `
             <div class="dream-meta">
                 <span class="card-category">
                     <span style="color: var(--accent); display:flex; align-items:center;">${icon}</span> 
-                    ${cat}
+                    ${safeCategory}
                 </span>
-                <span>${dream.date || dream.created_at.split(' ')[0]}</span>
+                <span>${safeDate}</span>
             </div>
-            <h3 class="dream-title">${dream.title}</h3>
-            <p class="dream-excerpt" style="margin-bottom: 1.5rem;">${excerpt}</p>
+            <h3 class="dream-title">${safeTitle}</h3>
+            <p class="dream-excerpt" style="margin-bottom: 1.5rem;">${safeExcerpt}</p>
             
             <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border); padding-top: 1rem; margin-top: auto;">
                 <button type="button" class="btn-text" style="font-size: 14px;" data-action="edit-dream" data-id="${publicId}">Düzenle</button>
@@ -525,11 +569,14 @@ function showEditModal(dream) {
         `<option value="${cat}" ${dream.category === cat ? 'selected' : ''}>${cat}</option>`
     ).join('');
 
+    const safeTitle = escapeHTML(dream.title);
+    const safeContent = escapeHTML(dream.content || "");
+
     const html = `
         <h2 class="cinematic-heading" style="font-size: 28px; margin-bottom: 1.5rem;">Rüyayı Düzenle</h2>
         <form id="edit-dream-form">
             <div class="input-group">
-                <input type="text" id="edit-title" class="cinematic-input title-input" value="${dream.title || ''}" placeholder="Rüyanın adı..." required>
+                <input type="text" id="edit-title" class="cinematic-input title-input" value="${safeTitle}" placeholder="Rüyanın adı..." required>
             </div>
             <div class="input-group">
                 <select id="edit-category" class="styled-select cinematic-input">
@@ -537,7 +584,7 @@ function showEditModal(dream) {
                 </select>
             </div>
             <div class="input-group">
-                <textarea id="edit-content" rows="7" class="cinematic-textarea" placeholder="Hatırladığın parçaları buraya bırak...">${dream.content || ''}</textarea>
+                <textarea id="edit-content" rows="7" class="cinematic-textarea" placeholder="Hatırladığın parçaları buraya bırak...">${safeContent}</textarea>
             </div>
             <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
                 <button type="button" class="btn-secondary" id="edit-cancel-btn">Vazgeç</button>

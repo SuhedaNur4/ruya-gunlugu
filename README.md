@@ -45,7 +45,7 @@ ruya-gunlugu/
 │   │   └── dreamRoutes.js         # Dream endpointleri + Swagger JSDoc
 │   │
 │   ├── services/
-│   │   ├── authService.js         # Auth iş mantığı
+│   │   ├── authService.js         # Kullanıcı veri erişimi / auth yardımcı fonksiyonları
 │   │   └── dreamService.js        # Dream iş mantığı ve validasyon
 │   │
 │   ├── tests/
@@ -63,6 +63,7 @@ ruya-gunlugu/
 │
 ├── .gitignore
 └── README.md
+```
 
 ---
 
