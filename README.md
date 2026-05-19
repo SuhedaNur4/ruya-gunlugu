@@ -54,7 +54,6 @@ ruya-gunlugu/
 │   ├── app.js                     # Express app yapılandırması
 │   ├── server.js                  # Sunucu başlatma
 │   ├── swagger.js                 # Swagger ayarları
-│   ├── .env.example               # Ortam değişkenleri örneği
 │   └── package.json
 │
 ├── frontend/
@@ -79,13 +78,7 @@ npm install
 
 ## Ortam Değişkenleri (.env)
 
-`backend/` klasörüne `.env` dosyası oluşturun:
-
-```bash
-cp .env.example .env
-```
-
-`.env` içeriği:
+`backend/` klasörüne `.env` adında bir dosya oluşturun ve şu içeriği yapıştırın:
 
 ```
 PORT=3000
@@ -94,7 +87,7 @@ CLIENT_ORIGIN=http://127.0.0.1:5500
 NODE_ENV=development
 ```
 
-> ⚠️  Test için rastgele değerler kullanın
+> ⚠️  `JWT_SECRET` için rastgele ve uzun bir değer kullanın
 
 ---
 
@@ -185,5 +178,3 @@ Geçerli kategoriler: `Lucid`, `Kabus`, `Huzurlu`, `Garip`, `Nostaljik`, `Macera
 - **public_id (UUID):** API'de tahmin edilebilir sıralı numeric id (`/api/dreams/1`) kullanılmaz. Her rüyanın UUID formatında `public_id`'si vardır.
 - **Soft Delete:** `DELETE` endpoint'i rüyayı veritabanından silmez; `is_deleted = 1` yaparak gizler. `GET` sorguları yalnızca `is_deleted = 0` kayıtları döner.
 - **DB Varlık Kontrolü:** Token geçerli imzalı olsa bile, veritabanında artık karşılığı olmayan kullanıcılar için 401 döner (500 değil).
-
-
