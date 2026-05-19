@@ -47,6 +47,15 @@ const state = {
 document.addEventListener("DOMContentLoaded", initApp);
 
 function initApp() {
+    // Modal referansları DOM hazır olduktan sonra alınıyor
+    modalContainer = document.getElementById('modal-container');
+    modalContent = document.getElementById('modal-content');
+    modalOverlay = document.getElementById('modal-overlay');
+
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', closeModal);
+    }
+
     restoreTheme();
     bindNavigation();
     bindAuthForms();
@@ -229,6 +238,11 @@ async function handleRegister(event) {
     const email = form.email.value.trim();
     const password = form.password.value;
 
+    if (password.length < 6) {
+        showToast("Şifre en az 6 karakter olmalıdır.", "error");
+        return;
+    }
+
     try {
         const data = await apiFetch("/auth/register", {
             method: "POST",
@@ -396,7 +410,8 @@ function renderDreams() {
             <h3 class="dream-title">${dream.title}</h3>
             <p class="dream-excerpt" style="margin-bottom: 1.5rem;">${excerpt}</p>
             
-            <div style="display: flex; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 1rem; margin-top: auto;">
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border); padding-top: 1rem; margin-top: auto;">
+                <button type="button" class="btn-text" style="font-size: 14px;" data-action="edit-dream" data-id="${publicId}">Düzenle</button>
                 <button type="button" class="btn-text" style="color: var(--danger); font-size: 14px;" data-action="delete-dream" data-id="${publicId}">Arşivden Kaldır</button>
             </div>
         `;
@@ -405,9 +420,9 @@ function renderDreams() {
 }
 
 // --- MODAL SYSTEM ---
-const modalContainer = document.getElementById('modal-container');
-const modalContent = document.getElementById('modal-content');
-const modalOverlay = document.getElementById('modal-overlay');
+let modalContainer = null;
+let modalContent = null;
+let modalOverlay = null;
 
 document.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-action]");
@@ -423,6 +438,12 @@ document.addEventListener("click", async (event) => {
             return;
         }
         handleDeleteDream(id);
+    }
+
+    if (action === "edit-dream") {
+        const id = button.dataset.id;
+        const dream = state.dreams.find(d => (d.public_id || d.publicId) === id);
+        if (dream) showEditModal(dream);
     }
 });
 
@@ -484,6 +505,68 @@ async function handleDeleteDream(publicId) {
     }
 }
 
+function showEditModal(dream) {
+    const publicId = dream.public_id || dream.publicId;
+    const categories = ['Lucid', 'Kabus', 'Huzurlu', 'Garip', 'Nostaljik', 'Macera', 'Kozmik', 'Diğer'];
+    const categoryOptions = categories.map(cat =>
+        `<option value="${cat}" ${dream.category === cat ? 'selected' : ''}>${cat}</option>`
+    ).join('');
+
+    const html = `
+        <h2 class="cinematic-heading" style="font-size: 28px; margin-bottom: 1.5rem;">Rüyayı Düzenle</h2>
+        <form id="edit-dream-form">
+            <div class="input-group">
+                <input type="text" id="edit-title" class="cinematic-input title-input" value="${dream.title || ''}" placeholder="Rüyanın adı..." required>
+            </div>
+            <div class="input-group">
+                <select id="edit-category" class="styled-select cinematic-input">
+                    ${categoryOptions}
+                </select>
+            </div>
+            <div class="input-group">
+                <textarea id="edit-content" rows="7" class="cinematic-textarea" placeholder="Hatırladığın parçaları buraya bırak...">${dream.content || ''}</textarea>
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
+                <button type="button" class="btn-secondary" id="edit-cancel-btn">Vazgeç</button>
+                <button type="submit" class="btn-primary">Kaydet</button>
+            </div>
+        </form>
+    `;
+    showModal(html);
+
+    const form = document.getElementById('edit-dream-form');
+    const cancelBtn = document.getElementById('edit-cancel-btn');
+
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal, { once: true });
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('edit-title').value.trim();
+            const content = document.getElementById('edit-content').value.trim();
+            const category = document.getElementById('edit-category').value;
+            await handleUpdateDream(publicId, { title, content, category });
+        }, { once: true });
+    }
+}
+
+async function handleUpdateDream(publicId, data) {
+    try {
+        await apiFetch(`/dreams/${publicId}`, {
+            method: 'PUT',
+            body: JSON.stringify(data)
+        });
+        const index = state.dreams.findIndex(d => (d.public_id || d.publicId) === publicId);
+        if (index !== -1) {
+            state.dreams[index] = { ...state.dreams[index], ...data };
+        }
+        closeModal();
+        renderDreams();
+        showToast("Rüya güncellendi.", "success");
+    } catch (err) {
+        showToast(err.message || "Rüya güncellenemedi.", "error");
+    }
+}
+
 function showModal(html) {
     if (!modalContent || !modalContainer) return;
     modalContent.innerHTML = html;
@@ -509,9 +592,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-if (modalOverlay) {
-    modalOverlay.addEventListener('click', closeModal);
-}
+// modalOverlay listener initApp içinde bağlanıyor
 
 // --- API FETCH & TOAST ---
 async function apiFetch(path, options = {}) {
