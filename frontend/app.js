@@ -211,6 +211,35 @@ function escapeHTML(value) {
         .replaceAll("'", "&#039;");
 }
 
+function formatDate(dateString) {
+    if (!dateString) return "";
+    let normalized = String(dateString).trim().replace(" ", "T");
+    if (!normalized.endsWith("Z")) normalized += "Z";
+    const date = new Date(normalized);
+    if (Number.isNaN(date.getTime())) return String(dateString);
+    const datePart = date.toLocaleDateString("tr-TR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+    const timePart = date.toLocaleTimeString("tr-TR", {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+    return `${datePart} · ${timePart}`;
+}
+
+const CATEGORY_CLASS = {
+    Lucid: "cat-lucid",
+    Kabus: "cat-kabus",
+    Huzurlu: "cat-huzurlu",
+    Garip: "cat-garip",
+    Nostaljik: "cat-nostaljik",
+    Macera: "cat-macera",
+    Kozmik: "cat-kozmik",
+    Diğer: "cat-diger"
+};
+
 // --- AUTH İŞLEMLERİ ---
 async function handleLogin(event) {
     event.preventDefault();
@@ -388,7 +417,8 @@ function renderFilters() {
 
     categories.forEach((cat, index) => {
         const btn = document.createElement('button');
-        btn.className = `filter-chip reveal-element ${state.currentFilter === cat ? 'active' : ''}`;
+        const catClass = CATEGORY_CLASS[cat] || CATEGORY_CLASS['Diğer'];
+        btn.className = `filter-chip reveal-element ${catClass} ${state.currentFilter === cat ? 'active' : ''}`;
         btn.style.animationDelay = `${index * 0.05}s`;
         btn.innerHTML = `${ICONS[cat] || ICONS['Diğer']} ${cat}`;
         btn.addEventListener('click', () => {
@@ -440,36 +470,40 @@ function renderDreams() {
 
     filtered.forEach((dream, index) => {
         const publicId = dream.public_id || dream.publicId;
+        const cat = dream.category || 'Diğer';
+        const catClass = CATEGORY_CLASS[cat] || CATEGORY_CLASS["Diğer"];
+        
         const card = document.createElement('article');
-        card.className = 'dream-card reveal-element';
+        card.className = `dream-card reveal-element ${catClass}`;
         card.style.animationDelay = `${index * 0.08}s`;
 
         const rawExcerpt = (dream.content && dream.content.length > 130)
             ? dream.content.substring(0, 130) + '...'
             : (dream.content || "Geriye sadece ince bir his kalmış...");
 
-        const cat = dream.category || 'Diğer';
         const icon = ICONS[cat] || ICONS['Diğer'];
 
         const safeTitle = escapeHTML(dream.title);
         const safeExcerpt = escapeHTML(rawExcerpt);
         const safeCategory = escapeHTML(cat);
-        const safeDate = escapeHTML(dream.date || dream.created_at.split(' ')[0]);
+        const safeDate = escapeHTML(formatDate(dream.created_at || dream.date));
 
         card.innerHTML = `
-            <div class="dream-meta">
-                <span class="card-category">
-                    <span style="color: var(--accent); display:flex; align-items:center;">${icon}</span> 
-                    ${safeCategory}
-                </span>
-                <span>${safeDate}</span>
+            <div class="dream-card-main" data-action="view-dream" data-id="${publicId}" role="button" tabindex="0" aria-label="${safeTitle} — devamını oku">
+                <div class="dream-meta">
+                    <span class="card-category ${catClass}" data-category="${safeCategory}">
+                        <span class="card-category-icon">${icon}</span>
+                        ${safeCategory}
+                    </span>
+                    <span class="dream-date">${safeDate}</span>
+                </div>
+                <h3 class="dream-title">${safeTitle}</h3>
+                <p class="dream-excerpt">${safeExcerpt}</p>
+                <span class="dream-read-more">Devamını oku →</span>
             </div>
-            <h3 class="dream-title">${safeTitle}</h3>
-            <p class="dream-excerpt" style="margin-bottom: 1.5rem;">${safeExcerpt}</p>
-            
-            <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border); padding-top: 1rem; margin-top: auto;">
-                <button type="button" class="btn-text" style="font-size: 14px;" data-action="edit-dream" data-id="${publicId}">Düzenle</button>
-                <button type="button" class="btn-text" style="color: var(--danger); font-size: 14px;" data-action="delete-dream" data-id="${publicId}">Arşivden Kaldır</button>
+            <div class="dream-card-actions">
+                <button type="button" class="btn-text dream-action-btn" data-action="edit-dream" data-id="${publicId}">Düzenle</button>
+                <button type="button" class="btn-text dream-action-btn dream-action-btn--danger" data-action="delete-dream" data-id="${publicId}">Arşivden Kaldır</button>
             </div>
         `;
         dreamsContainer.appendChild(card);
@@ -487,6 +521,13 @@ document.addEventListener("click", async (event) => {
 
     const action = button.dataset.action;
 
+    if (action === "view-dream") {
+        const id = button.dataset.id;
+        const dream = state.dreams.find(d => (d.public_id || d.publicId) === id);
+        if (dream) showDreamDetailModal(dream);
+        return;
+    }
+
     if (action === "delete-dream") {
         const id = button.dataset.id;
         if (!id || id === "undefined") {
@@ -500,7 +541,10 @@ document.addEventListener("click", async (event) => {
     if (action === "edit-dream") {
         const id = button.dataset.id;
         const dream = state.dreams.find(d => (d.public_id || d.publicId) === id);
-        if (dream) showEditModal(dream);
+        if (dream) {
+            closeModal();
+            showEditModal(dream);
+        }
     }
 });
 
@@ -560,6 +604,39 @@ async function handleDeleteDream(publicId) {
     } catch (err) {
         showToast(err.message || "Rüya arşivden kaldırılamadı.", "error");
     }
+}
+
+function showDreamDetailModal(dream) {
+    const publicId = dream.public_id || dream.publicId;
+    const cat = dream.category || "Diğer";
+    const icon = ICONS[cat] || ICONS["Diğer"];
+    const catClass = CATEGORY_CLASS[cat] || CATEGORY_CLASS["Diğer"];
+    const safeTitle = escapeHTML(dream.title);
+    const safeContent = escapeHTML(dream.content || "Bu rüyada kayıtlı metin yok.");
+    const safeCategory = escapeHTML(cat);
+    const safeDate = escapeHTML(formatDate(dream.created_at || dream.date));
+
+    const html = `
+        <article class="dream-detail">
+            <div class="dream-meta dream-detail-meta">
+                <span class="card-category ${catClass}" data-category="${safeCategory}">
+                    <span class="card-category-icon">${icon}</span>
+                    ${safeCategory}
+                </span>
+                <span class="dream-date">${safeDate}</span>
+            </div>
+            <h2 class="cinematic-heading dream-detail-title">${safeTitle}</h2>
+            <div class="dream-detail-content">${safeContent}</div>
+            <div class="dream-detail-actions">
+                <button type="button" class="btn-secondary" id="detail-close-btn">Kapat</button>
+                <button type="button" class="btn-text" data-action="edit-dream" data-id="${publicId}">Düzenle</button>
+            </div>
+        </article>
+    `;
+    showModal(html);
+
+    const closeBtn = document.getElementById("detail-close-btn");
+    if (closeBtn) closeBtn.addEventListener("click", closeModal, { once: true });
 }
 
 function showEditModal(dream) {
