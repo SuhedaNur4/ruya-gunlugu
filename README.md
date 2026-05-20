@@ -45,11 +45,12 @@ ruya-gunlugu/
 │   │   └── dreamRoutes.js         # Dream endpointleri + Swagger JSDoc
 │   │
 │   ├── services/
-│   │   ├── authService.js         # Kullanıcı veri erişimi / auth yardımcı fonksiyonları
+│   │   ├── authService.js         # Auth iş mantığı, validasyon, bcrypt ve JWT işlemleri
 │   │   └── dreamService.js        # Dream iş mantığı ve validasyon
 │   │
 │   ├── tests/
-│   │   └── dreamService.test.js   # Jest unit testleri
+│   │   ├── dreamService.test.js   # Rüya iş mantığı unit testleri
+|   |   └── authService.test.js    # Auth iş mantığı unit testleri
 │   │
 │   ├── app.js                     # Express app yapılandırması
 │   ├── server.js                  # Sunucu başlatma
@@ -73,6 +74,27 @@ ruya-gunlugu/
 git clone <repo-url>
 cd ruya-gunlugu/backend
 npm install
+```
+
+---
+
+## Hızlı Başlangıç
+
+```bash
+# 1. Bağımlılıkları yükle
+cd backend
+npm install
+
+# 2. .env dosyasını oluştur (bkz. Ortam Değişkenleri)
+
+# 3. Testleri çalıştır
+npm test
+
+# 4. Sunucuyu başlat
+npm start
+
+# 5. Swagger dokümantasyonuna git
+# http://localhost:3000/api-docs
 ```
 
 ---
@@ -135,6 +157,28 @@ Tüm endpoint'ler Swagger UI üzerinden test edilebilir. "Authorize" butonuna JW
 cd backend
 npm test
 ```
+
+> Not: Test dosyaları `backend/tests/` klasöründe yer alır. `dreamService.test.js` ve `authService.test.js` bağımsız çalışır.
+
+---
+
+## Sorun Giderme
+
+### `better-sqlite3` derleme hatası
+
+Node.js sürümü değiştikten sonra `npm test` veya `npm start` hata verirse:
+
+```bash
+cd backend
+npm rebuild better-sqlite3
+```
+
+> Öneri: [Node.js LTS](https://nodejs.org) sürümü kullanın.
+
+### Sunucu başlamazsa
+- `.env` dosyasının `backend/` klasöründe olduğundan emin olun.
+- `JWT_SECRET` alanının dolu olduğunu kontrol edin.
+- Port 3000 başka uygulama tarafından kullanılıyorsa `.env` içinde `PORT` değerini değiştirin.
 
 ---
 
