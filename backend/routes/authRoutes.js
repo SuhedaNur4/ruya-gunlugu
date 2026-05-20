@@ -49,7 +49,7 @@ const authMiddleware = require('../middleware/authMiddleware');
  *                 user:
  *                   type: object
  *                   properties:
- *                     publicId:
+ *                     public_id:
  *                       type: string
  *                     name:
  *                       type: string
@@ -95,7 +95,7 @@ router.post('/register', authController.register);
  *                 user:
  *                   type: object
  *                   properties:
- *                     publicId:
+ *                     public_id:
  *                       type: string
  *                     name:
  *                       type: string
