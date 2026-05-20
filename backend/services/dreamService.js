@@ -4,7 +4,10 @@ const dreamModel = require('../models/dreamModel');
 const ALLOWED_CATEGORIES = ['Lucid', 'Kabus', 'Huzurlu', 'Garip', 'Nostaljik', 'Macera', 'Kozmik', 'Diğer'];
 
 function normalizeCategory(category) {
-    return ALLOWED_CATEGORIES.includes(category) ? category : 'Diğer';
+    if (!category) return 'Diğer';
+    const lower = category.toLowerCase();
+    const match = ALLOWED_CATEGORIES.find(c => c.toLowerCase() === lower);
+    return match || 'Diğer';
 }
 
 function validateDreamInput({ title, content }) {
