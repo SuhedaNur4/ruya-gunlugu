@@ -50,7 +50,7 @@ ruya-gunlugu/
 │   │
 │   ├── tests/
 │   │   ├── dreamService.test.js   # Rüya iş mantığı unit testleri
-|   |   └── authService.test.js    # Auth iş mantığı unit testleri
+│   │   └── authService.test.js    # Auth iş mantığı unit testleri
 │   │
 │   ├── app.js                     # Express app yapılandırması
 │   ├── server.js                  # Sunucu başlatma
