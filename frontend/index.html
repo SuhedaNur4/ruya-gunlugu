@@ -7,7 +7,7 @@
     <link rel="icon" href="data:,">
     <!-- Cinematic Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500&family=Sora:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=8">
+    <link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
     
@@ -68,6 +68,9 @@
                 <div class="home-hero">
                     <div class="home-copy">
                         <h1 class="cinematic-title reveal-text delay-1">Hoş geldin.</h1>
+                        <div class="home-hero-visual reveal-element delay-2" aria-hidden="true">
+                            <img src="assets/images/hero-forest.png" alt="" width="1200" height="675" loading="lazy" decoding="async">
+                        </div>
                         <p class="cinematic-subtitle reveal-text delay-2">Rüyalar uyanınca solmaya başlar. Hatırlayabildiğin parçaları burada sessiz ve güvenli bir arşive bırak.</p>
                         <div class="home-actions reveal-text delay-3">
                             <button type="button" class="btn-primary" data-nav="new-dream">Bir Parçayı Koru</button>
@@ -80,6 +83,9 @@
                 <div class="question-section">
                     <div class="question-grid reveal-element delay-3">
                         <article class="question-card glass-panel">
+                            <div class="question-card-art" aria-hidden="true">
+                                <img src="assets/images/card-eyes.png" alt="" loading="lazy" decoding="async">
+                            </div>
                             <div class="question-icon" aria-hidden="true">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
                             </div>
@@ -89,6 +95,9 @@
                         </article>
 
                         <article class="question-card glass-panel">
+                            <div class="question-card-art" aria-hidden="true">
+                                <img src="assets/images/card-prism.png" alt="" loading="lazy" decoding="async">
+                            </div>
                             <div class="question-icon" aria-hidden="true">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                             </div>
@@ -98,6 +107,9 @@
                         </article>
 
                         <article class="question-card glass-panel">
+                            <div class="question-card-art" aria-hidden="true">
+                                <img src="assets/images/card-memory.png" alt="" loading="lazy" decoding="async">
+                            </div>
                             <div class="question-icon" aria-hidden="true">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
                             </div>
@@ -107,6 +119,9 @@
                         </article>
 
                         <article class="question-card glass-panel">
+                            <div class="question-card-art" aria-hidden="true">
+                                <img src="assets/images/card-soul.png" alt="" loading="lazy" decoding="async">
+                            </div>
                             <div class="question-icon" aria-hidden="true">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                             </div>
@@ -116,6 +131,9 @@
                         </article>
 
                         <article class="question-card glass-panel">
+                            <div class="question-card-art" aria-hidden="true">
+                                <img src="assets/images/card-vortex.png" alt="" loading="lazy" decoding="async">
+                            </div>
                             <div class="question-icon" aria-hidden="true">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                             </div>
@@ -189,6 +207,7 @@
                         <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                         <input type="text" id="search-input" class="search-input cinematic-input" placeholder="Bir sembol, yer veya his ara...">
                     </div>
+                    <button type="button" class="btn-primary btn-archive-new" data-nav="new-dream">+ Yeni Rüya</button>
                 </div>
             </div>
             
@@ -205,7 +224,7 @@
         <section data-view="new-dream" class="view" hidden>
             <div class="new-dream-card glass-panel">
                 <h2 class="cinematic-heading">Bir Parçayı Koru</h2>
-                <p style="color: var(--text-muted); margin-bottom: 2.5rem; font-size: 1.15rem;">Uyanmadan önce kalanları buraya bırak.</p>
+                <p style="color: var(--text-muted); margin-bottom: 2.5rem; font-size: 1.15rem;">Bugünün hatırlanan izleri, eski rüyaların sessiz arşivi.</p>
                 <form id="dream-form">
                     <div class="input-group">
                         <input type="text" id="title" placeholder="Bu rüyaya bir ad ver..." class="cinematic-input title-input" required>
@@ -246,6 +265,6 @@
 
     </main>
 
-    <script src="app.js?v=8" defer></script>
+    <script src="app.js?v=9" defer></script>
 </body>
 </html>
