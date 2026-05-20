@@ -106,4 +106,20 @@ describe('Dream Service - Unit Tests', () => {
         expect(dreamService.normalizeCategory('GecersizSey')).toBe('Diğer');
         expect(dreamService.normalizeCategory(undefined)).toBe('Diğer');
     });
+
+    test('normalizeCategory: küçük harf girişi doğru formata dönüştürülür', () => {
+        expect(dreamService.normalizeCategory('kabus')).toBe('Kabus');
+        expect(dreamService.normalizeCategory('lucid')).toBe('Lucid');
+        expect(dreamService.normalizeCategory('huzurlu')).toBe('Huzurlu');
+    });
+
+    test('normalizeCategory: büyük harf girişi doğru formata dönüştürülür', () => {
+        expect(dreamService.normalizeCategory('KABUS')).toBe('Kabus');
+        expect(dreamService.normalizeCategory('LUCID')).toBe('Lucid');
+    });
+
+    test('normalizeCategory: karışık harf girişi doğru formata dönüştürülür', () => {
+        expect(dreamService.normalizeCategory('hUZURLU')).toBe('Huzurlu');
+        expect(dreamService.normalizeCategory('KaBuS')).toBe('Kabus');
+    });
 });
