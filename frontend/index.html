@@ -133,14 +133,16 @@
             <div class="auth-card glass-panel">
                 <h2 class="cinematic-heading">Arşivine Dön</h2>
                 <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.15rem;">Rüyalarını sakladığın sessiz alana tekrar gir.</p>
-                <form id="login-form">
+                <form id="login-form" novalidate>
                     <div class="input-group">
-                        <label>E-posta</label>
-                        <input type="email" name="email" id="login-email" class="cinematic-input" required>
+                        <label for="login-email">E-posta</label>
+                        <input type="email" name="email" id="login-email" class="cinematic-input"
+                               autocomplete="email" required>
                     </div>
                     <div class="input-group">
-                        <label>Şifre</label>
-                        <input type="password" name="password" id="login-password" class="cinematic-input" required>
+                        <label for="login-password">Şifre</label>
+                        <input type="password" name="password" id="login-password" class="cinematic-input"
+                               autocomplete="current-password" minlength="6" required>
                     </div>
                     <button type="submit" class="btn-primary full-width">Giriş Yap</button>
                     <button type="button" class="btn-text" data-auth-switch="register">Hesap Oluştur</button>
@@ -153,18 +155,21 @@
             <div class="auth-card glass-panel">
                 <h2 class="cinematic-heading">Arşivi Başlat</h2>
                 <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.15rem;">Uyanınca yanında kalanları güvenli bir yerde sakla.</p>
-                <form id="register-form">
+                <form id="register-form" novalidate>
                     <div class="input-group">
-                        <label>İsim</label>
-                        <input type="text" name="name" id="register-name" class="cinematic-input">
+                        <label for="register-name">İsim</label>
+                        <input type="text" name="name" id="register-name" class="cinematic-input"
+                               autocomplete="name" required>
                     </div>
                     <div class="input-group">
-                        <label>E-posta</label>
-                        <input type="email" name="email" id="register-email" class="cinematic-input" required>
+                        <label for="register-email">E-posta</label>
+                        <input type="email" name="email" id="register-email" class="cinematic-input"
+                               autocomplete="email" required>
                     </div>
                     <div class="input-group">
-                        <label>Şifre (Min 6)</label>
-                        <input type="password" name="password" id="register-password" class="cinematic-input" required>
+                        <label for="register-password">Şifre <span style="color:var(--text-muted);font-size:0.85em;">(en az 6 karakter)</span></label>
+                        <input type="password" name="password" id="register-password" class="cinematic-input"
+                               autocomplete="new-password" minlength="6" required>
                     </div>
                     <button type="submit" class="btn-primary full-width">Kayıt Ol</button>
                     <button type="button" class="btn-text" data-auth-switch="login">Zaten arşivin var mı? Giriş Yap</button>
