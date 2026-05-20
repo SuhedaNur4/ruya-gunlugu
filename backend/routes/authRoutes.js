@@ -125,9 +125,7 @@ router.post('/login', authController.login);
  *                 user:
  *                   type: object
  *                   properties:
- *                     id:
- *                       type: integer
- *                     public_id:
+ *                     publicId:
  *                       type: string
  *                     name:
  *                       type: string
